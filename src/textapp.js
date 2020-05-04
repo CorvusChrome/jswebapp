@@ -31,9 +31,11 @@ export class TextApp {
                     }))
                 }
                 const list = document.getElementById('list');
-                list.innerHTML = output.map(toCard).join(' ')
+                list.innerHTML = output.map(toCard).join(' ');
                 const editBtn = document.querySelectorAll('#edit-btn');
-                editBtn.forEach(q => q.addEventListener('click', editElement))
+                editBtn.forEach(q => q.addEventListener('click', editElement));
+                const deleteBtn = document.querySelectorAll('#delete-btn');
+                deleteBtn.forEach(q=> q.addEventListener('click', deleteElement));
             })
     }
 
@@ -48,7 +50,7 @@ function toCard(t) {
         : ""
 
     const title = `<div><div id='${t.id}' style="display:inline;"> 
-    ${t.title}</div><div class="edit btn" id="edit-btn"> edit </div></div>`
+    ${t.title}</div><div class="edit btn" id="edit-btn"> edit</div><div class="edit btn" id="delete-btn">delete </div></div>`
 
     return `<div class="mui--text-black-54 ${t.id}">${date}  ${dateEdit}${title}<br></div>`
 }
@@ -57,7 +59,6 @@ function toCard(t) {
 function editElement() {
     const textClass = this.previousSibling;
     const date = this.parentNode.parentNode.firstChild.nextSibling.innerText;
-    console.log(date)
     textClass.innerHTML = `<input id=${textClass.id} value="${textClass.innerText}">`;
     textClass.addEventListener('keypress', function (e) {
         let editedText = textClass.firstChild;
@@ -76,11 +77,17 @@ function editElement() {
                 .then(response => response.json())
                 .then(response => {
                     textInfo.id = response.name
-                    return textInfo
+                    return textInfo;
                 })
                 .then(TextApp.renderList);
         }
     })
 }
 
+function deleteElement(){
+    const elementToDelete = this.parentNode.firstChild;
+    fetch(`https://corvus-appjs.firebaseio.com/text/${elementToDelete.id}.json`, {
+        method: 'DELETE'
+    }).then(TextApp.renderList);
+}
 
