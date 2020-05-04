@@ -25,7 +25,6 @@ function submitFormHandler(e) {
         submitBtn.disabled = true;
 
         TextApp.create(textInfo).then(() => {
-            console.log(textInfo.title);
             textInput.value = '';
             textInput.className = '';
             submitBtn.disabled = false;
