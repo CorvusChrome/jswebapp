@@ -49,7 +49,7 @@ window.addEventListener('load', TextApp.renderList)
 
 form.addEventListener('submit', submitFormHandler)
 
-textInput.addEventListener('input', () => { submitBtn.disabled = !isValidLength(textInput.value) })
+textInput.addEventListener('input', () => { submitBtn.disabled = textInput.value.length < 5 })
 
 function submitFormHandler(e) {
     e.preventDefault()
