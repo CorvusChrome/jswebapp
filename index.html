@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.muicss.com/mui-latest/css/mui.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="src/styles.css" />
+    <script src="https://cdn.muicss.com/mui-latest/js/mui.min.js"></script>
+    <title>qwe js</title>
+</head>
+
+<body>
+    <div id="sidebar">
+        <div class="mui--text-white mui--text-display1 mui--align-vertical">Corvuses webapp</div>
+    </div>
+    <div id="content" class="mui-container-fluid">
+        <div class="mui-row">
+            <div class="mui-col-sm-10 mui-col-sm-offset-1">
+                <br>
+                <br>
+                <div class="mui--text-black-54 mui--text-body2">Input your text</div>
+                <div class="mui-divider"></div>
+                <br>
+                <!-- form -->
+                <form class="mui-form" id="form">
+                    <div class="mui-textfield mui-textfield--float-label">
+                        <input type="text" id="text-input" required minlength="5" maxlength="250">
+                        <label>Your awesome text</label>
+                    </div>
+                    <button type="submit" class="mui-btn mui-btn--raised mui-btn--primary" id="submit" disabled>
+                        Push this
+                    </button>
+                </form>
+                <!-- form -->
+                <br>
+                <div class="mui--text-black-54 mui--text-body2">Your text</div>
+                <div class="mui-divider"></div>
+                <br>
+                <div id="list"></div>
+            </div>
+        </div>
+    </div>
+    <script src="./src/app.js"></script>
+</body>
+
+</html>
