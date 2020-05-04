@@ -20,7 +20,8 @@ function submitFormHandler(e) {
     if (isValidLength(textInput.value)) {
         const textInfo = {
             title: textInput.value.trim(),
-            date: new Date().toJSON()
+            date: new Date().toJSON(),
+            dateEdit: ""
         }
         submitBtn.disabled = true;
 

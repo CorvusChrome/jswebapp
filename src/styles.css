@@ -42,12 +42,15 @@ html, body, input, textarea, button {
   }
 }
 
-.edit-btn {
+.edit {
   display: inline;
-  padding-left: 20px;
   color: rgba(0,0,0,.38);
+  font-size: 80%;
 }
-.edit-btn:hover {
+.edit.btn{
+  padding-left: 20px;
+}
+.edit.btn:hover {
   text-decoration: underline;
   cursor: pointer;
 }

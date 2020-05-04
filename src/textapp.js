@@ -33,36 +33,41 @@ export class TextApp {
                 const list = document.getElementById('list');
                 list.innerHTML = output.map(toCard).join(' ')
                 const editBtn = document.querySelectorAll('#edit-btn');
-                console.log(editBtn)
-                editBtn.forEach(q=> q.addEventListener('click', editElement))
+                editBtn.forEach(q => q.addEventListener('click', editElement))
             })
     }
 
 }
 
 function toCard(t) {
-    return `<div class="mui--text-black-54 ${t.id}">
-    <div>${new Date(t.date).toLocaleDateString()}
-    ${new Date(t.date).toLocaleTimeString()}</div>    
-    <div><div id ='${t.id}' style="display:inline;"> ${t.title}</div><div class="edit-btn" id="edit-btn"> edit </div></div>
-    <br>
-    </div>`
+    const date = `<div style="display:inline">${new Date(t.date).toLocaleDateString()}
+    &nbsp;${new Date(t.date).toLocaleTimeString()}</div>`
+
+    const dateEdit = t.dateEdit ? `<div class="edit date">edited: ${new Date(t.dateEdit).toLocaleDateString()}
+    &nbsp;${new Date(t.dateEdit).toLocaleTimeString()}</div>`
+        : ""
+
+    const title = `<div><div id='${t.id}' style="display:inline;"> 
+    ${t.title}</div><div class="edit btn" id="edit-btn"> edit </div></div>`
+
+    return `<div class="mui--text-black-54 ${t.id}">${date}  ${dateEdit}${title}<br></div>`
 }
 
 
 function editElement() {
     const textClass = this.previousSibling;
+    const date = this.parentNode.parentNode.firstChild.nextSibling.innerText;
+    console.log(date)
     textClass.innerHTML = `<input id=${textClass.id} value="${textClass.innerText}">`;
     textClass.addEventListener('keypress', function (e) {
         let editedText = textClass.firstChild;
         if (e.key === 'Enter') {
             const textInfo = {
                 title: editedText.value.trim(),
-                date: new Date().toJSON()
+                dateEdit:new Date().toJSON()
             }
-            console.log(textInfo)
             fetch(`https://corvus-appjs.firebaseio.com/text/${this.id}.json`, {
-                method: 'PUT',
+                method: 'PATCH',
                 body: JSON.stringify(textInfo),
                 headers: {
                     'Content-type': 'application/json'
