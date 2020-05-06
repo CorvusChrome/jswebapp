@@ -1,123 +1,117 @@
-class TextApp {
-    static create(t) {
-        return fetch('https://corvus-appjs.firebaseio.com/text.json', {
-            method: 'POST',
-            body: JSON.stringify(t),
-            headers: {
-                'Content-type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(response => {
-                t.id = response.name
-                return t
-            })
-            .then(TextApp.renderList);
-    }
-
-    static renderList() {
-        fetch('https://corvus-appjs.firebaseio.com/text.json')
-            .then(response => response.json())
-            .then(response => {
-                let output;
-                if (response.error) {
-                    window.alert(`<p>${response}</p>`);
-                }
-                else {
-                    output = Object.keys(response).map(key => ({
-                        ...response[key],
-                        id: key
-                    }))
-                }
-                const list = document.getElementById('list');
-                list.innerHTML = output.map(toCard).join(' ');
-                const editBtn = document.querySelectorAll('#edit-btn');
-                editBtn.forEach(q => q.addEventListener('click', editElement));
-                const deleteBtn = document.querySelectorAll('#delete-btn');
-                deleteBtn.forEach(q => q.addEventListener('click', deleteElement));
-            })
-    }
-
+Document.prototype.create = function (cfg) {
+    return Object.assign(this.createElement(cfg.tag ?? 'div'), cfg);
+}
+HTMLElement.prototype.append = function (cfg) {
+    return this.appendChild(document.create(cfg));
+};
+Date.prototype.toNiceString = function () {
+    return this.toLocaleDateString() + ' ' + this.toLocaleTimeString();
 }
 
-const form = document.getElementById('form');
+window.addEventListener('load', renderList);
+form.addEventListener('submit', submitFormHandler);
 const textInput = form.querySelector('#text-input');
-const submitBtn = form.querySelector('#submit')
 
-window.addEventListener('load', TextApp.renderList)
+let fetchApp = {
+    url: 'https://corvus-appjs.firebaseio.com/',
+    get: async function () {
+        let response = await fetch(`${this.url}text.json`);
+        return response.json()
+    },
+    post: async function (data) {
+        fetch(`${this.url}text.json`, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+    pathc: async function (data, id) {
+        let response = await fetch(`${this.url}text/${id}.json`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+        return response.json()
+    },
+    delete: async function (id) {
+        await fetch(`${this.url}text/${id}.json`, {
+            method: 'DELETE'
+        });
+        renderList();
+    }
+}
 
-
-form.addEventListener('submit', submitFormHandler)
-
-textInput.addEventListener('input', () => { submitBtn.disabled = textInput.value.length < 5 })
+async function renderList() {
+    const data = await fetchApp.get();
+    const list = document.getElementById('list')
+    list.innerText = null;
+    for (let q in data) {
+        list.appendChild(buildElement(data[q], q));
+    }
+}
 
 function submitFormHandler(e) {
     e.preventDefault()
-
-    if (textInput.value.length >= 5) {
-        const textInfo = {
-            title: textInput.value.trim(),
-            date: new Date().toJSON(),
-            dateEdit: ""
-        }
-        submitBtn.disabled = true;
-
-        TextApp.create(textInfo).then(() => {
+    const textInfo = {
+        title: textInput.value.trim(),
+        date: new Date().toJSON(),
+    }
+    fetchApp.post(textInfo)
+        .then(() => {
             textInput.value = '';
             textInput.className = '';
-            submitBtn.disabled = false;
         })
+        .then(renderList)
+}
+
+function buildElement(t, key) {
+    var element = document.create({ className: 'mui--text-black-54 block', id: key });
+    element.append({
+        innerText: new Date(t.date).toNiceString(),
+        style: 'display:inline',
+    });
+
+    if (t.dateEdit) {
+        element.append({
+            className: 'edit date',
+            style: 'display:inline',
+            style: 'padding-left:5px',
+            innerText: 'edited  ' + new Date(t.date).toNiceString()
+        });
     }
+    let title = element.append({
+        innerText: t.title
+    });
+    title.append({
+        className: 'edit btn',
+        innerText: 'edit',
+        onclick: () => editElement(t, title, key)
+    });
+    title.append({
+        className: 'edit btn',
+        innerText: 'delete',
+        onclick: () => fetchApp.delete(key)
+    });
+    return element;
 }
 
-
-function toCard(t) {
-    const date = `<div style="display:inline">${new Date(t.date).toLocaleDateString()}
-    &nbsp;${new Date(t.date).toLocaleTimeString()}</div>`
-
-    const dateEdit = t.dateEdit ? `<div class="edit date">edited: ${new Date(t.dateEdit).toLocaleDateString()}
-    &nbsp;${new Date(t.dateEdit).toLocaleTimeString()}</div>`
-        : ""
-
-    const title = `<div><div id='${t.id}' style="display:inline;"> 
-    ${t.title}</div><div class="edit btn" id="edit-btn"> edit</div><div class="edit btn" id="delete-btn">delete </div></div>`
-
-    return `<div class="mui--text-black-54 ${t.id}">${date}  ${dateEdit}${title}<br></div>`
-}
-
-
-function editElement() {
-    const textClass = this.previousSibling;
-    const date = this.parentNode.parentNode.firstChild.nextSibling.innerText;
-    textClass.innerHTML = `<input id=${textClass.id} value="${textClass.innerText}">`;
-    textClass.addEventListener('keypress', function (e) {
-        let editedText = textClass.firstChild;
-        if (e.key === 'Enter') {
-            const textInfo = {
-                title: editedText.value.trim(),
-                dateEdit: new Date().toJSON()
-            }
-            fetch(`https://corvus-appjs.firebaseio.com/text/${this.id}.json`, {
-                method: 'PATCH',
-                body: JSON.stringify(textInfo),
-                headers: {
-                    'Content-type': 'application/json'
-                }
-            })
-                .then(response => response.json())
-                .then(response => {
-                    textInfo.id = response.name
-                    return textInfo;
+async function editElement(t, title, key) {
+    title.innerHTML = null;
+    title.append({
+        tag: 'textarea',
+        className: 'mui-textfield mui-textfield--float-label',
+        value: t.title,
+        onkeypress: e => {
+            if (e.key == 'Enter') {
+                fetchApp.pathc({
+                    title: e.target.value.trim(),
+                    dateEdit: new Date()
+                }, key).then(async editingKey => {
+                    const data = await fetchApp.get();
+                    let thisElement = document.getElementById(key);
+                    thisElement.innerHTML = null;
+                    thisElement.appendChild(buildElement(data[key], key, editingKey == key))
                 })
-                .then(TextApp.renderList);
+            }
         }
-    })
-}
-
-function deleteElement() {
-    const elementToDelete = this.parentNode.firstChild;
-    fetch(`https://corvus-appjs.firebaseio.com/text/${elementToDelete.id}.json`, {
-        method: 'DELETE'
-    }).then(TextApp.renderList);
+    });
 }
 
