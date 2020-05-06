@@ -62,7 +62,11 @@ async function submitFormHandler(e) {
 }
 
 function buildElement(t, key) {
-    var element = document.create({ className: 'mui--text-black-54 block', id: key });
+    var element = document.create({
+        className: 'mui--text-black-54 block',
+        id: key,
+        style: 'margin-bottom: 1rem'
+    });
     element.append({
         innerText: new Date(t.date).toNiceString(),
         style: 'display:inline',

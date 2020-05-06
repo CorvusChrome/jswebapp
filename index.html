@@ -8,14 +8,24 @@
     <link href="https://cdn.muicss.com/mui-latest/css/mui.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="src/styles.css" />
     <script src="https://cdn.muicss.com/mui-latest/js/mui.min.js"></script>
-    <title>qwe js</title>
+    <title>web js</title>
 </head>
 
 <body>
-    <div id="sidebar">
-        <div class="mui--text-white mui--text-display1 mui--align-vertical">Corvuses webapp</div>
-    </div>
-    <div id="content" class="mui-container-fluid">
+    <header class="mui-appbar mui--z1">
+        <div class="mui-container">
+            <table>
+                <tr class="mui--appbar-height">
+                    <td class="mui--text-title">Corvuses webapp</td>
+                    <td class="mui--text-right" id="login">Login </td>
+                </tr>
+            </table>
+        </div>
+    </header>
+
+    <div id="sidebar">qwe</div>
+
+    <div id="content" class="mui-container">
         <div class="mui-row">
             <div class="mui-col-sm-10 mui-col-sm-offset-1">
                 <br>
@@ -26,7 +36,7 @@
                 <!-- form -->
                 <form class="mui-form" id="form">
                     <div class="mui-textfield mui-textfield--float-label">
-                        <input type="text" id="text-input"  required minlength="1" maxlength="250">
+                        <input type="text" id="text-input" required minlength="1" maxlength="250">
                         <label>Your awesome text</label>
                     </div>
                     <button type="submit" class="mui-btn mui-btn--raised mui-btn--primary" id="submit">
