@@ -58,6 +58,7 @@ async function submitFormHandler(e) {
     const list = document.getElementById('list');
     list.appendChild(buildElement(textInfo, key.name))
     textInput.value = '';
+    textInput.className = '';
 }
 
 function buildElement(t, key) {
