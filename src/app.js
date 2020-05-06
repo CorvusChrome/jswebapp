@@ -16,26 +16,26 @@ let fetchApp = {
     url: 'https://corvus-appjs.firebaseio.com/',
     get: async function () {
         let response = await fetch(`${this.url}text.json`);
-        return response.json()
+        return response.json();
     },
     post: async function (data) {
-        fetch(`${this.url}text.json`, {
+        let response = await fetch(`${this.url}text.json`, {
             method: 'POST',
             body: JSON.stringify(data)
         });
+        return response.json();
     },
     pathc: async function (data, id) {
         let response = await fetch(`${this.url}text/${id}.json`, {
             method: 'PATCH',
             body: JSON.stringify(data)
         });
-        return response.json()
+        response.json();
     },
     delete: async function (id) {
         await fetch(`${this.url}text/${id}.json`, {
             method: 'DELETE'
         });
-        renderList();
     }
 }
 
@@ -48,18 +48,16 @@ async function renderList() {
     }
 }
 
-function submitFormHandler(e) {
+async function submitFormHandler(e) {
     e.preventDefault()
     const textInfo = {
         title: textInput.value.trim(),
         date: new Date().toJSON(),
     }
-    fetchApp.post(textInfo)
-        .then(() => {
-            textInput.value = '';
-            textInput.className = '';
-        })
-        .then(renderList)
+    const key = await fetchApp.post(textInfo);
+    const list = document.getElementById('list');
+    list.appendChild(buildElement(textInfo, key.name))
+    textInput.value = '';
 }
 
 function buildElement(t, key) {
@@ -88,7 +86,11 @@ function buildElement(t, key) {
     title.append({
         className: 'edit btn',
         innerText: 'delete',
-        onclick: () => fetchApp.delete(key)
+        onclick: () => {
+            fetchApp.delete(key);
+            const elementToDelete = document.getElementById(key)
+            elementToDelete.parentNode.removeChild(elementToDelete);
+        }
     });
     return element;
 }
@@ -108,7 +110,7 @@ async function editElement(t, title, key) {
                     const data = await fetchApp.get();
                     let thisElement = document.getElementById(key);
                     thisElement.innerHTML = null;
-                    thisElement.appendChild(buildElement(data[key], key, editingKey == key))
+                    thisElement.appendChild(buildElement(data[key], key))
                 })
             }
         }
