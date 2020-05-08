@@ -82,3 +82,17 @@ header table {
   text-decoration: underline;
   cursor: pointer;
 }
+
+.modal {
+  display: block;
+  width: 600px;
+  max-height: 300px;
+  margin: 100px auto;
+  background-color: #fff;
+}
+
+#modal-form {
+  top: 0;
+  bottom: 0;
+  padding: 25px;
+}
