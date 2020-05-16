@@ -6,8 +6,8 @@ let loginPanel = document.getElementById('login-panel')
 export function createLoginPanel() {
     loginPanel.innerHTML = `
     <div style="font-size: 9px;"> Authentication on this page not safe yet, do not enter your private information</div>
-    <div class="mui--text-right" id="login" style="display: inline; padding-right: 30px;">Sing up</div>
-    <div class="mui--text-right" id="login" style="display: inline;">Sing in</div>`;
+    <div class="mui--text-right" id="login" style="display: inline; padding-right: 30px;" title="use fake email and password">Sing up</div>
+    <div class="mui--text-right" id="login" style="display: inline;" title="use fake email and password">Sing in</div>`;
     const modal = document.querySelectorAll('#login');
     modal.forEach(el => el.addEventListener('click', createModal))
 }
