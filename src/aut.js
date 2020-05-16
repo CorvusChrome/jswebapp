@@ -1,19 +1,32 @@
-const API_KEY = 'AIzaSyBH84gEmnjHPr67KMlGNlo3_uVChTX6odU';
 
-export function singInWithEmailAndPasword(email, password) {
-    return fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`, {
+const apiKey = 'AIzaSyBH84gEmnjHPr67KMlGNlo3_uVChTX6odU';
+
+export async function singInWithEmailAndPasword(email, password) {
+    let data = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`, {
         method: 'POST',
         body: JSON.stringify({ email, password, returnSecureToken: true })
-    })
-        .then(response => response.json())
-        .then(data => console.log(data))
+    });
+    data = await data.json();
+    let user = await fetch(`https://corvus-appjs.firebaseio.com/userdata.json`, {
+        method: 'GET'
+    });
+    user = await user.json();
+    for (let q in user) {
+        if (user[q].id == data.localId) {
+            return user[q].userName
+        }
+    }
 }
 
-export function singUpWithEmailAndPasword(email, password) {
-    return fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`, {
+export async function singUpWithEmailAndPasword(email, password, userName) {
+    console.log(userName)
+    let data = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`, {
         method: 'POST',
         body: JSON.stringify({ email, password, returnSecureToken: true })
-    })
-        .then(response => response.json())
-        .then(data => console.log(data))
+    });
+    data = await data.json();
+    data = await fetch(`https://corvus-appjs.firebaseio.com/userdata.json`, {
+        method: 'POST',
+        body: JSON.stringify({ userName: userName, id: data.localId })
+    });
 }

@@ -1,6 +1,6 @@
 import { fetchApp } from './fetxhApp.js';
 import { buildElement } from './buildElement.js';
-import { createModal } from './createModal.js'
+import { userName, createLoginPanel } from './createModal.js'
 
 Document.prototype.create = function (cfg) {
     return Object.assign(this.createElement(cfg.tag ?? 'div'), cfg);
@@ -12,21 +12,23 @@ Date.prototype.toNiceString = function () {
     return this.toLocaleDateString() + ' ' + this.toLocaleTimeString();
 }
 
-window.addEventListener('load', renderList);
+window.addEventListener('load', () => {
+    renderList();
+    createLoginPanel();
+});
 
 form.addEventListener('submit', submitFormHandler);
 
-const modal = document.querySelectorAll('#login');
-modal.forEach(el => el.addEventListener('click', createModal))
+
 
 const textInput = form.querySelector('#text-input');
 
-async function renderList() {
+export async function renderList() {
     const data = await fetchApp.get();
     const list = document.getElementById('list')
     list.innerText = null;
     for (let q in data) {
-        list.appendChild(buildElement(data[q], q));
+        list.appendChild(buildElement(data[q], q, data[q].userName));
     }
 }
 
@@ -35,10 +37,11 @@ async function submitFormHandler(e) {
     const textInfo = {
         title: textInput.value.trim(),
         date: new Date().toJSON(),
+        userName: userName
     }
     const key = await fetchApp.post(textInfo);
     const list = document.getElementById('list');
-    list.appendChild(buildElement(textInfo, key.name))
+    list.appendChild(buildElement(textInfo, key.name, userName))
     textInput.value = '';
     textInput.className = '';
 }
